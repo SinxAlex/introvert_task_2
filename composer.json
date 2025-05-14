@@ -1,0 +1,19 @@
+{
+  "name": "sinxalex/introvert_task2",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "autoload": {
+        "psr-4": {
+          "IntrovertTest\\": "src/"
+        }
+  },
+  "authors": [
+    {
+      "name": "Alex",
+      "email": "aleshaascet@gmail.com"
+    }
+  ],
+  "require": {
+  }
+}
