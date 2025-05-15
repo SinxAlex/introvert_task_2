@@ -60,63 +60,46 @@
 </div>
 
 <script>
- $(document).ready(function() {
+    $(document).ready(function () {
         $.ajax({
             url: '/index.php',
             dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    try {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        const maxDate = new Date();
-                        maxDate.setDate(today.getDate() + 30);
-                        maxDate.setHours(0, 0, 0, 0);
-
-                        const datesData = JSON.parse(response.data);
-                        console.log(datesData);
-                        const specialDates = [];
-
-                        for (const dateStr in datesData) {
-                            if (datesData[dateStr].length > 0) {
-                                const dateParts = dateStr.split('-');
-                                specialDates.push({
-                                    date: new Date(
-                                        parseInt(dateParts[0]),
-                                        parseInt(dateParts[1]) - 1,
-                                        parseInt(dateParts[2])
-                                    ),
-                                    data: {
-                                        ids: datesData[dateStr]
-                                    },
-                                    cssClass: 'has-events'
-                                });
-                            }
+            success: function (response) {
+                var selectableDates=[];
+                for (var dateStr in response) {
+                    if (response.hasOwnProperty(dateStr)) {
+                        var dateParts = dateStr.split('-');
+                        var date = new Date(
+                            parseInt(dateParts[0]), // год
+                            parseInt(dateParts[1]) - 1, // месяц (0-11)
+                            parseInt(dateParts[2]) // день
+                        );
+                        if(response[dateStr]==1){
+                            selectableDates.push({date:date});
                         }
-
-                        $('#mydate').glDatePicker({
-                            showAlways: true,
-                            selectableDateRange: [
-                                { from: today, to: maxDate }
-                            ],
-                            specialDates: specialDates,
-                            onClick: function(el, cell, date, data) {
-                                if (data && data.ids) {
-                                    alert('ID событий: ' + data.ids.join(', '));
-                                }
-                            }
-                        });
-
-                    } catch (e) {
-                        console.error('Ошибка парсинга данных:', e);
                     }
                 }
+
+                // Инициализация календаря
+                $('#mydate').glDatePicker({
+                    showAlways: true,
+                    selectableDates:selectableDates,
+                    onClick: function (el, cell, date, data) {
+                        // Дополнительная проверка при клике
+                        var dateStr = date.toISOString().split('T')[0];
+                        if (response[dateStr] === 0) {
+                            alert('Извините, на эту дату нет свободных записей');
+                            return false;
+                        }
+                        return true;
+                    }
+                });
             },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
+            error: function (xhr, status, error) {
+                console.error('Ошибка загрузки данных:', error);
             }
         });
     });
-</script>
-</body>
-</html>
+    </script>
+    </body>
+    </html>

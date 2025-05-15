@@ -9,9 +9,9 @@ if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
 
     header('Content-Type: application/json');
 
-    $data=new \IntrovertTest\IntrovertApi('testDate2','2025-05-15',[24374824,57202302,247654035]);
+    $data=new \IntrovertTest\IntrovertApi('fga_date','2025-05-15',[24374824,57202302,247654035]);
 
-    echo json_encode(['success' => true, 'message' => 'AJAX-ответ', 'data' => $data->returnJsonData()]);
+    echo  $data->returnJsonData();
     exit();
 }
 

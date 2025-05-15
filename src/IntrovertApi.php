@@ -6,10 +6,11 @@ use Introvert\ApiClient;
 use Introvert\Configuration;
 class IntrovertApi
 {
-    const  API_URL = 'https://api.s1.yadrocrm.ru/';
+    const    API_URL = 'https://api.s1.yadrocrm.ru/';
 
-    const     INTERVAL_DAY = 30;
+    const    INTERVAL_DAY = 30;
 
+    const     LIMIT=10;
     public    $field;
     public    $date;
     const     COUNT_PACKAGE = 50;
@@ -26,8 +27,10 @@ class IntrovertApi
 
         $this->api = new \Introvert\ApiClient();
         try {
-                $this->data=$this->getDataLeads($status,strtotime($date));
-                $this->returnJsonData();
+            foreach ($status as $status_leads) {
+                $this->data[$status_leads]=$this->getDataLeads([$status_leads],strtotime($date));
+            }
+             $this->returnJsonData();
         } catch (Exception $e)
         {
             echo 'Exception when calling account->allStatuses: ', $e->getMessage(), PHP_EOL;
@@ -124,7 +127,7 @@ class IntrovertApi
     static  function arrDates():array
     {
         $dates = [];
-        $currentDate = new \DateTime('2025-05-01');
+        $currentDate = new \DateTime('2025-05-15');
 
         for ($i = 0; $i < self::INTERVAL_DAY; $i++) {
             $date = clone $currentDate;
@@ -140,17 +143,20 @@ class IntrovertApi
         $arr=[];
         foreach (self::arrDates() as $date)
         {
-            $arr_id_leads=[];
-            foreach ($this->data as $item) {
-                foreach ($item['custom_fields'] as $key => $value)
-                {
-                       if($value["name"]===$this->field && $value["values"][0]["value"]==$date)
-                       {
-                                $arr_id_leads[]=$item["id"];
-                       }
+            $i=0;
+            foreach ($this->data as $k=>$v) {
+                foreach ($v as $item) {
+                    foreach ($item['custom_fields'] as $key => $value)
+                    {
+                        if ($value["name"] === $this->field && $value["values"][0]["value"] == $date) {
+                            $i++;
+                        }
+                    }
                 }
             }
-            $arr[date("Y-m-d",strtotime($date))]=$arr_id_leads;
+
+            $i = ($i < self::LIMIT) ? 1 : 0;
+            $arr[date("Y-m-d",strtotime($date))]=$i;
         }
       return json_encode($arr);
     }
