@@ -150,7 +150,7 @@ class IntrovertApi
                        }
                 }
             }
-            $arr[$date]=$arr_id_leads;
+            $arr[date("Y-m-d",strtotime($date))]=$arr_id_leads;
         }
       return json_encode($arr);
     }

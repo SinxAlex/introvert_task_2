@@ -1,1 +1,114 @@
-<?php
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="/src/assets/glDatePicker-2.0/glDatePicker.js"></script>
+    <link href="/src/assets/glDatePicker-2.0/styles/glDatePicker.default.css" rel="stylesheet" type="text/css">
+
+    <title>Моя HTML-страница</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #35424a;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background: #35424a;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #e8491d;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Добро пожаловать на мою страницу!</h1>
+</header>
+
+<div class="container">
+    <h2>О нас</h2>
+    <p>Это пример HTML-страницы с базовой структурой, CSS и JavaScript.</p>
+
+
+    <input type="text" id="mydate" gldp-id="mydate" />
+    <div gldp-el="mydate"
+         style="width:400px; height:300px; position:absolute; top:70px; left:100px;">
+    </div>
+</div>
+
+<script>
+ $(document).ready(function() {
+        $.ajax({
+            url: '/index.php',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    try {
+
+                        const datesData = JSON.parse(response.data);
+                        console.log(datesData);
+                        const specialDates = [];
+
+                        for (const dateStr in datesData) {
+                            if (datesData[dateStr].length > 0) {
+                                const dateParts = dateStr.split('-');
+                                specialDates.push({
+                                    date: new Date(
+                                        parseInt(dateParts[0]),
+                                        parseInt(dateParts[1]) - 1,
+                                        parseInt(dateParts[2])
+                                    ),
+                                    data: {
+                                        ids: datesData[dateStr]
+                                    },
+                                    cssClass: 'has-events'
+                                });
+                            }
+                        }
+
+                        $('#mydate').glDatePicker({
+                            showAlways: true,
+                            specialDates: specialDates,
+                            onClick: function(el, cell, date, data) {
+                                if (data && data.ids) {
+                                    alert('ID событий: ' + data.ids.join(', '));
+                                }
+                            }
+                        });
+
+                    } catch (e) {
+                        console.error('Ошибка парсинга данных:', e);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+            }
+        });
+    });
+</script>
+</body>
+</html>
