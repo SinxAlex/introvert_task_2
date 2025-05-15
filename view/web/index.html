@@ -67,6 +67,11 @@
             success: function(response) {
                 if (response.success) {
                     try {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const maxDate = new Date();
+                        maxDate.setDate(today.getDate() + 30);
+                        maxDate.setHours(0, 0, 0, 0);
 
                         const datesData = JSON.parse(response.data);
                         console.log(datesData);
@@ -91,6 +96,9 @@
 
                         $('#mydate').glDatePicker({
                             showAlways: true,
+                            selectableDateRange: [
+                                { from: today, to: maxDate }
+                            ],
                             specialDates: specialDates,
                             onClick: function(el, cell, date, data) {
                                 if (data && data.ids) {
