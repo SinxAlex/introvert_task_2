@@ -4,7 +4,7 @@
 
 ```php
  $data=new \IntrovertTest\IntrovertApi('testDate2','2025-05-15',[24374824,57202302,247654035]);
-var_dump($data->$data->returnJsonData());
+var_dump($data->returnJsonData());
 ```
 ## Зависимости проекта
 Основные используемые пакеты:
